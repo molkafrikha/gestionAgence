@@ -63,7 +63,7 @@ services:
 
   Eureka:
     container_name: erukaserver-container
-    build: .\eurekaServer
+    build: .\
     ports:
       - "8761:8761"
     hostname: eurekaServer
@@ -90,10 +90,29 @@ services:
       DB_USER: keycloak
       DB_PASSWORD: password
       KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: molka
+      KEYCLOAK_PASSWORD: Pa55wOrd
         # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the MySQL JDBC driver documentation in order to use it.
         #JDBC_PARAMS: "connectTimeout=30000"
     ports:
       - 8080:8080
     depends_on:
       - mysql
+
+  ApiGateway:
+    container_name: apigatway
+    build: .\
+    ports:
+      - "8081:8081"
+    hostname: apiGateway
+    image: "apigatway"
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://eurekaServer:8761/eureka/
+      - spring.security.oauth2.resourceserver.jwt.issuer-uri=http://keycloak:8080/auth/realms/spring_boot_microservices_realm
+    depends_on:
+      - Eureka
+      - keycloak
+    links:
+      - Eureka
+
+
+
